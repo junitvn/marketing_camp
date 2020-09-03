@@ -14,9 +14,10 @@ export default function Login({ navigation }) {
   const storeToken = async (data) => {
     try {
       console.log(data);
-      await AsyncStorage.setItem('token', data.accessToken);
+      await AsyncStorage.setItem('token', JSON.stringify(data));
+      
       console.log('Stored token!');
-      navigation.navigate("Home", {
+      navigation.navigate("HomeScreen", {
         data
       })
     } catch (e) {
@@ -25,22 +26,24 @@ export default function Login({ navigation }) {
   }
 
   const handleFacebookLogin = () => {
-    LoginManager.logInWithPermissions(['public_profile', 'email', 'page']).then(
-      function (result) {
-        if (result.isCancelled) {
-          console.log('Login cancelled')
-        } else {
-          AccessToken.getCurrentAccessToken().then(
-            (data) => {
-              storeToken(data);
-            }
-          )
+    LoginManager.logInWithPermissions(['public_profile', 'email',
+      'pages_show_list', 'pages_manage_engagement', 'pages_read_engagement',
+      'pages_read_user_content']).then(
+        function (result) {
+          if (result.isCancelled) {
+            console.log('Login cancelled')
+          } else {
+            AccessToken.getCurrentAccessToken().then(
+              (data) => {
+                storeToken(data);
+              }
+            )
+          }
+        },
+        function (error) {
+          console.log('Login fail with error: ' + error)
         }
-      },
-      function (error) {
-        console.log('Login fail with error: ' + error)
-      }
-    )
+      )
 
   }
   return (

@@ -9,8 +9,10 @@ const SplashScreen = ({ navigation }) => {
         const timerSplash = setTimeout(async () => {
             const token = await AsyncStorage.getItem('token');
             if (token !== null) {
-                console.log('home', navigation);
-                navigation.navigate("HomeScreen", { token })
+                console.log('string ', token);
+                const data = JSON.parse(token);
+                console.log('home', data);
+                navigation.navigate("HomeScreen", { data })
             } else {
                 console.log('login');
                 navigation.navigate("LoginScreen")
