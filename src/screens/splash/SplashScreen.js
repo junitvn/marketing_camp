@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { ImageBackground } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import {useSelector} from 'react-redux';
 
 const SplashScreen = ({ navigation }) => {
     const DELAY_TIME = 0;
@@ -8,7 +9,8 @@ const SplashScreen = ({ navigation }) => {
     useEffect(() => {
         const timerSplash = setTimeout(async () => {
             const token = await AsyncStorage.getItem('token');
-            if (token !== null) {
+            const tokenLogin = useSelector(state =>state)
+            if (token !== null||tokenLogin.tokenReducer.name !='') {
                 console.log('home', navigation);
                 navigation.navigate("HomeScreen", { token })
             } else {
