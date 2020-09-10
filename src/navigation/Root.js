@@ -1,52 +1,63 @@
 import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
 import Login from '../screens/login/Login';
 import Home from '../screens/home/Home';
-import Logout from '../screens/login/Logout';
-import SignUp from '../screens/login/SignUp';
+import SplashScreen from '../screens/splash/SplashScreen';
 import DrawerContent from '../components/DrawerContent';
-// import SplashScreen from '../screens/splash/SplashScreen';
-
+import LogoutFB from '../screens/logout/LogoutFB';
+import {useSelector} from 'react-redux';
 
 const Stack = createStackNavigator();
 
 const Drawer = createDrawerNavigator();
 
+// const HomeStack = () => {
+//     return <Stack.Navigator screenOptions={{
+//         headerShown: false
+//     }}>
+//         <Stack.Screen name="SplashScreen" component={SplashScreen} />
+//         <Stack.Screen name="LoginScreen" component={Login} />
+//         <Stack.Screen name="HomeScreen" component={Home} />
+//         <Stack.Screen name = 'LogoutFB' component = {LogoutFB}/>
+//     </Stack.Navigator>
+// }
+
+// const Root = () => {
+//     return <NavigationContainer >
+//         <Drawer.Navigator initialRouteName="Home" drawerContent = {()=><DrawerContent/>}>
+//             <Drawer.Screen name="Home" component={HomeStack} />
+//             <Drawer.Screen name = "Logout" component = {LogoutFB}/>
+//         </Drawer.Navigator>
+//     </NavigationContainer>
+// }
+
 const HomeDrawer = () => {
     return (
-        <Drawer.Navigator 
-            initialRouteName="Home"
-            drawerContent = {()=><DrawerContent/>}
-        >
-            <Drawer.Screen name="Home" component={Home} />
-            <Drawer.Screen name = 'Logout' component = {Logout}/>
+        <Drawer.Navigator drawerContent = {()=><DrawerContent/>}>
+            <Drawer.Screen name = 'Home' component = {Home}/>
+            <Drawer.Screen name = 'LogoutFB' component = {LogoutFB}/>
         </Drawer.Navigator>
     )
 }
 
 const Root = () => {
-    const token = useSelector(state => state);
-    console.log(token.tokenReducer)
-    
-        return (
-        <NavigationContainer>
-            <Stack.Navigator screenOptions={{
-                headerShown: false
-            }}>
-                {(token.tokenReducer.name =='')?
-                <>
-                    <Stack.Screen name="Login" component={Login} />
-                    <Stack.Screen name='SignUp' component= {SignUp}/>
-                </>:
-                <Stack.Screen name="HomeDrawer" component={HomeDrawer}/>}
+    // const token = AsyncStorage.getItem('token');
+    const data = useSelector(state =>state);
+    const token = data.reducer;
+    console.log(token.reducer);
+    console.log('token',AsyncStorage.getItem('token'))
 
+    return (
+        <NavigationContainer>
+            <Stack.Navigator screenOptions = {{headerShown:false}}>
+                {token===null?
+                <Stack.Screen name = 'Login' component = {Login} />:
+                <Stack.Screen name = 'HomeDrawer' component = {HomeDrawer} />}
             </Stack.Navigator>
         </NavigationContainer>
-
-        )
-    
+    )
 }
 export default Root;

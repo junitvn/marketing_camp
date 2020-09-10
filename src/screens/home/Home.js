@@ -1,18 +1,44 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, FlatList } from 'react-native';
 import Header from '../../components/Header';
 import {useSelector} from 'react-redux';
+import { LoginManager } from 'react-native-fbsdk';
+import Axios from 'axios';
+import PageItem from '../../components/PageItem';
 
-const Home = ({navigation}) => {
+const Home = ({ route, navigation }) => {
+  // const { data } = route.params;
   const token = useSelector(state => state);
+  const data = token.reducer;
+  console.log('data', data);
+  const [pages, setPages] = useState({});
+  useEffect(() => {
+    Axios.get(`https://graph.facebook.com/${data.userID}/accounts?
+    fields=name,access_token&access_token=${data.accessToken}`).then(res => {
+      console.log('res', res.data.data);
+      const pages = res.data.data;
+      setPages(pages);
+    })
+      .catch(e => {
+        console.log(e);
+      })
+  }, []);
 
-  return( 
-  <View>
-    <Header backgroundColor="#76BDFC" onMenuPress = {()=> navigation.toggleDrawer()}/>
-    <Text>{token.tokenReducer.name} </Text>
-     
-  </View>)
-  
+  const renderItem = ({ item, index }) => {
+    return <PageItem navigation={navigation} item={item} />
+  }
+
+  return <View style={{ flex: 1, backgroundColor: 'white' }}>
+    <Header backgroundColor="#00a0f8" barStyle='default' navigation={navigation} />
+    <View style={{ marginTop: 50, flex: 1, paddingHorizontal: 8, paddingTop: 8 }}>
+      <FlatList
+        data={pages}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+      />
+      <Button title = 'back' onPress = {()=>navigation.navigate('LogoutFB')}/>
+    </View>
+  </View>
 }
 
 export default Home;
